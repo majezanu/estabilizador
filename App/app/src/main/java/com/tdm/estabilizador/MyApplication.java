@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 public class MyApplication extends Application {
-    private Context context;
+    private static Context context;
 
     @Override
     public void onCreate() {
@@ -12,13 +12,10 @@ public class MyApplication extends Application {
         context = getApplicationContext();
     }
 
-    public  Context getContext() {
+    public static Context getContext() {
         return context;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
 
     public  MyApplication getInstance() {
         return (MyApplication) context.getApplicationContext();
