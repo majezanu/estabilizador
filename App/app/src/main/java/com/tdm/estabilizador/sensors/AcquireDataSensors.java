@@ -96,8 +96,9 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
-        float mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
-        presenter.showToast("La aceleración es: "+ String.valueOf(mAccelCurrent));
+        float accelationSquareRoot = (x * x + y * y + z * z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        presenter.showToast("La aceleración es: "+ String.valueOf(accelationSquareRoot));
     }
     private void DataRotationVector(SensorEvent event){
         float[] rotationMatrix = new float[16];
