@@ -17,7 +17,7 @@ public class MyApplication extends Application {
     }
 
 
-    public  MyApplication getInstance() {
+    public static MyApplication getInstance() {
         return (MyApplication) context.getApplicationContext();
     }
 }

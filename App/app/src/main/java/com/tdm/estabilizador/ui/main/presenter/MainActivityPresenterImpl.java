@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.tdm.estabilizador.sensors.AcquireDataSensors;
 import com.tdm.estabilizador.ui.main.view.MainActivityView;
 import com.tdm.estabilizador.utils.RunTimePermission;
 
@@ -21,11 +22,18 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
 
     private void init(){
         activity = view.getActivity();
+        requestPermissionForApp();
     }
     @Override
     public void start() {
-        requestPermissionForApp();
-        //takeVideoIntent();
+       // takeVideoIntent();
+        getSensorData();
+    }
+
+    @Override
+    public void stop() {
+        Intent service = new Intent(activity, AcquireDataSensors.class);
+        activity.stopService(service);
     }
 
     private void requestPermissionForApp() {
@@ -40,7 +48,11 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
             activity.startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
         }
     }
-
+    private void getSensorData(){
+        AcquireDataSensors.setPresenter(this);
+        Intent intent = new Intent(activity, AcquireDataSensors.class);
+        activity.startService(intent);
+    }
     @Override
     public void permissionGranted() {
         view.showSnackBar("¡Gracias por darnos permiso!");
@@ -50,5 +62,10 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     @Override
     public void permissionDenied() {
         view.showSnackBar("Perdónanos por no ser suficientes para ti");
+    }
+
+    @Override
+    public void showToast(String s) {
+        view.showToast(s);
     }
 }

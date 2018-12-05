@@ -73,4 +73,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     public Activity getActivity() {
         return this;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
 }

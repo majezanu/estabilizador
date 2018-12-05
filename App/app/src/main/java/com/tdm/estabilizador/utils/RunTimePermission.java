@@ -59,7 +59,7 @@ public class RunTimePermission extends Activity {
             }
             if (arrayListPermission.isEmpty())
             {
-                runTimePermissionListener.permissionGranted();
+                this.runTimePermissionListener.permissionGranted();
                 return;
             }
             arrayPermissions = new String[arrayListPermission.size()];
@@ -71,9 +71,9 @@ public class RunTimePermission extends Activity {
         }
         else
         {
-            if (runTimePermissionListener != null)
+            if (this.runTimePermissionListener != null)
             {
-                runTimePermissionListener.permissionGranted();
+                this.runTimePermissionListener.permissionGranted();
             }
         }
     }
@@ -115,7 +115,7 @@ public class RunTimePermission extends Activity {
         }
         else
         {
-            if(deniedCount == arrayListPermission.size()){
+            if(deniedCount >0){
                 setAlertMessage();
 
                 runTimePermissionListener.permissionDenied();
@@ -189,21 +189,19 @@ public class RunTimePermission extends Activity {
                 {
                     bean.isAccept = false;
                 }
-                break;
+                return;
             }
         }
     }
 
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
         int c = 0;
         for (String permission: permissions) {
             updatePermissionResult(permission, grantResults[c++]);
         }
         checkUpdate();
     }
-
-
 
 }
