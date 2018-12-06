@@ -1,6 +1,5 @@
 package com.tdm.estabilizador.sensors;
 
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.tdm.estabilizador.MyApplication;
 import com.tdm.estabilizador.ui.main.presenter.MainActivityPresenter;
 
 import java.util.List;
@@ -22,6 +20,23 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor sensor;
     private static MainActivityPresenter presenter;
+    private boolean getFirstAngles;
+    private long sampleTime = 1;
+    private long past = 0;
+    private long now = 0;
+    private float angleX =-90;
+    private float angleY = 0;
+    private float currentAngleX = 0;
+    private float currentAngleY = 0;
+    private float pwm1 = 0;
+    private float pwm2 = 0;
+    private float errorX;
+    private float errorY;
+    private float errorPastX;
+    private float errorPastY;
+    private float kp = 3;
+    private float ki = (float) 1;
+
     public AcquireDataSensors() {
     }
 
@@ -46,6 +61,7 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        getFirstAngles = true;
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> listaSensores = null;
         if (mSensorManager != null) {
@@ -55,13 +71,7 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
                 mSensorManager.registerListener(this, sensor,
                         SensorManager.SENSOR_DELAY_UI, new Handler());
                 presenter.showToast("Excelente, tienes el sensor indicado");
-            }else if(listaSensores.contains(mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER))) {
-                sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                mSensorManager.registerListener(this, sensor,
-                        SensorManager.SENSOR_DELAY_UI, new Handler());
-                presenter.showToast("Excelente, tienes el segundo sensor indicado");
-            }
-            else{
+            }else{
                 presenter.showToast("Perdónanos por no ser suficientes para ti");
             }
         }
@@ -80,27 +90,19 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         getDataSensor(event);
     }
+
     private void getDataSensor(SensorEvent event) {
-        switch (event.sensor.getType()){
-            case Sensor.TYPE_ROTATION_VECTOR:
-                DataRotationVector(event);
-                break;
-            case Sensor.TYPE_ACCELEROMETER:
-                DataAccelerometer(event);
-                break;
+        synchronized (this){
+            switch (event.sensor.getType()){
+                case Sensor.TYPE_ROTATION_VECTOR:
+                    DataRotationVector(event);
+                    break;
+            }
         }
-
-
     }
-    private void DataAccelerometer(SensorEvent event){
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-        float accelationSquareRoot = (x * x + y * y + z * z)
-                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
-        presenter.showToast("La aceleración es: "+ String.valueOf(accelationSquareRoot));
-    }
+
     private void DataRotationVector(SensorEvent event){
+
         float[] rotationMatrix = new float[16];
         SensorManager.getRotationMatrixFromVector(
                 rotationMatrix, event.values);
@@ -114,10 +116,39 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
 
         float[] orientations = new float[3];
         SensorManager.getOrientation(remappedRotationMatrix, orientations);
-        for(float f: orientations) {
-            f = (float)(Math.toDegrees(f));
+        for(int i = 0; i < 3; i++) {
+            orientations[i] = (float)(Math.toDegrees(orientations[i]));
         }
-        presenter.showToast("El angulo es: "+ String.valueOf(orientations[2]));
+        float angleX_sensor = orientations[2];
+        float angleY_sensor = orientations[1];
+        if(getFirstAngles){
+            Log.d("Primera vez","si");
+            getFirstAngles = false;
+        }
+        now = System.currentTimeMillis();
+        long timeChange = now - past;
+        if(timeChange >= sampleTime){
+            errorX = angleX - angleX_sensor;
+            errorY = angleY - angleY_sensor;
+
+            errorPastX = errorX*sampleTime+errorPastX;
+            errorPastY = errorY*sampleTime+errorPastY;
+
+            float P_X = kp*errorX;
+            float P_Y = kp*errorY;
+            float I_X = ki*errorPastX;
+            float I_Y = ki*errorPastY;
+
+            pwm1 = P_X + I_X;
+            pwm2 = P_Y + I_Y;
+
+            past = now;
+        }
+        float[] data = {pwm1,pwm2};
+        presenter.sendData(data);
+        Log.d("PWM1",String.valueOf(pwm1));
+        Log.d("PWM2",String.valueOf(pwm2));
+
     }
 
     @Override
