@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.usb.host"/>
+
     <application
         android:name="com.tdm.estabilizador.MyApplication"
         android:allowBackup="true"
@@ -14,18 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".sensors.AcquireDataSensors"
+            android:name=".services.sensors.AcquireDataSensors"
             android:enabled="true"
             android:exported="false" >
         </service>
-
         <activity android:name=".ui.main.view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
+        <service
+            android:name="com.tdm.estabilizador.services.transmiters.UsbService"
+            android:enabled="true">
+        </service>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.tdm.estabilizador.sensors;
+package com.tdm.estabilizador.services.sensors;
 
 import android.app.Service;
 import android.content.Context;

@@ -7,8 +7,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.physicaloid.lib.Physicaloid;
-import com.tdm.estabilizador.sensors.AcquireDataSensors;
+import com.tdm.estabilizador.services.sensors.AcquireDataSensors;
 import com.tdm.estabilizador.ui.main.view.MainActivityView;
 import com.tdm.estabilizador.utils.RunTimePermission;
 
@@ -19,7 +18,7 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     private RunTimePermission runtimePermission;
     private Activity activity;
     private static final int REQUEST_VIDEO_CAPTURE = 21;
-    Physicaloid mPhysicaloid;
+
     public MainActivityPresenterImpl(MainActivityView view) {
         this.view = view;
         init();
@@ -28,13 +27,16 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     private void init(){
         activity = view.getActivity();
         requestPermissionForApp();
-        mPhysicaloid = new Physicaloid(activity);
-        mPhysicaloid.setBaudrate(115200);
+
+        //registerReceiver(mUsbReceiver, filter);
     }
     @Override
     public void start() {
-       takeVideoIntent();
-        getSensorData();
+
+        float[] y = {2.5500f,2.8900f};
+        sendData(y);
+       //takeVideoIntent();
+        //getSensorData();
     }
 
     @Override
@@ -80,13 +82,8 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     @Override
     public void sendData(float[] x) {
         byte[] buffer = FloatArray2ByteArray(x);
-        Log.d("No se pudo abrir", "oki");
-        if(mPhysicaloid.isOpened()){
-
-            mPhysicaloid.write(buffer, buffer.length);
-        }else {
-            Log.d("No se pudo abrir", "oki");
-        }
+        String s = String.valueOf(x[0])+String.valueOf(x[1]);
+        view.sendData(s.getBytes());
     }
     private static byte[] FloatArray2ByteArray(float[] values){
         ByteBuffer buffer = ByteBuffer.allocate(4 * values.length);
@@ -108,4 +105,5 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
             Log.v("PictureEdit", "onActivityResult resultCode is not ok: " + resultCode);
         }
     }
+
 }
