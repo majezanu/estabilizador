@@ -49,7 +49,7 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
 
         runtimePermission = new RunTimePermission(activity);
         runtimePermission.requestPermission(new String[]{Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO}, this);
+                Manifest.permission.RECORD_AUDIO,Manifest.permission.BLUETOOTH}, this);
     }
     private void takeVideoIntent() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
