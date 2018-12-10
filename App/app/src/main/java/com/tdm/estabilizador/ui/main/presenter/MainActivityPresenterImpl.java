@@ -33,10 +33,10 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     @Override
     public void start() {
 
-        float[] y = {2.5500f,2.8900f};
-        sendData(y);
-       //takeVideoIntent();
-        //getSensorData();
+        //float[] y = {2.5500f,2.8900f};
+        //sendData(y);
+       takeVideoIntent();
+       getSensorData();
     }
 
     @Override
@@ -82,8 +82,8 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, RunTime
     @Override
     public void sendData(float[] x) {
         byte[] buffer = FloatArray2ByteArray(x);
-        String s = String.valueOf(x[0])+String.valueOf(x[1]);
-        view.sendData(s.getBytes());
+        String s = String.valueOf(x[0]) + "," + String.valueOf(x[1] + "k");
+        view.sendData(s);
     }
     private static byte[] FloatArray2ByteArray(float[] values){
         ByteBuffer buffer = ByteBuffer.allocate(4 * values.length);

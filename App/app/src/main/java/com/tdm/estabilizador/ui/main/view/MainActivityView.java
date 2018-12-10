@@ -7,5 +7,5 @@ public interface MainActivityView {
     void showSnackBar(String s);
     void showLoading(boolean t);
     Activity getActivity();
-    void sendData(byte[] x);
+    void sendData(String x);
 }

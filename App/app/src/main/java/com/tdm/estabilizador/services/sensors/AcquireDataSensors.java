@@ -34,8 +34,10 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
     private float errorY;
     private float errorPastX;
     private float errorPastY;
-    private float kp = 3;
-    private float ki = (float) 1;
+    private float kp_x = (float) 0.7;
+    private float ki_x = (float) .05;
+    private float kp_y = (float) 1;
+    private float ki_y = (float) .05;
 
     public AcquireDataSensors() {
     }
@@ -134,10 +136,10 @@ public class AcquireDataSensors extends Service implements SensorEventListener {
             errorPastX = errorX*sampleTime+errorPastX;
             errorPastY = errorY*sampleTime+errorPastY;
 
-            float P_X = kp*errorX;
-            float P_Y = kp*errorY;
-            float I_X = ki*errorPastX;
-            float I_Y = ki*errorPastY;
+            float P_X = kp_x*errorX;
+            float P_Y = kp_y*errorY;
+            float I_X = ki_x*errorPastX;
+            float I_Y = ki_y*errorPastY;
 
             pwm1 = P_X + I_X;
             pwm2 = P_Y + I_Y;

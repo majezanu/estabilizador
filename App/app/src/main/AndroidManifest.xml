@@ -5,9 +5,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-feature android:name="android.hardware.usb.host"/>
 
     <application
+        android:largeHeap="true"
         android:name="com.tdm.estabilizador.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
